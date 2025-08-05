@@ -14,27 +14,75 @@ public class RegisterServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        userService = new UserService(); // Or use Dependency Injection if needed
+        userService = new UserService();
     }
 
+    /**
+     * Handles GET - Show Registration Form
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Get user type from query param (staff or customer)
+        String userType = request.getParameter("user_type");
+        if (userType == null || userType.trim().isEmpty()) {
+            userType = "customer"; // Default if not provided
+        }
+
+        // Set prefix for account number display
+        String prefix = "CUS00";
+        if ("staff".equalsIgnoreCase(userType)) {
+            prefix = "STF00";
+        }
+
+        // Display placeholder account number
+        String tempAccountNumber = prefix + "AUTO"; // Just for UI, real one will be generated after insert
+
+        request.setAttribute("account_number", tempAccountNumber);
+        request.setAttribute("user_type", userType);
+
+        // Forward to JSP
+        RequestDispatcher dispatcher = request.getRequestDispatcher("register.jsp");
+        dispatcher.forward(request, response);
+    }
+
+    /**
+     * Handles POST - Register User
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String accountNumber = request.getParameter("account_number");
+        // Get form fields
         String name = request.getParameter("name");
         String address = request.getParameter("address");
         String telephone = request.getParameter("telephone");
         String email = request.getParameter("email");
+        String userType = request.getParameter("user_type");
 
-        Userdto userDto = new Userdto(0, accountNumber, name, address, telephone, email);
+        // Default to customer if missing
+        if (userType == null || userType.trim().isEmpty()) {
+            userType = "customer";
+        }
 
-        boolean isRegistered = userService.registerUser(userDto);
+        // Create DTO
+        Userdto userDto = new Userdto();
+        userDto.setName(name);
+        userDto.setAddress(address);
+        userDto.setTelephone(telephone);
+        userDto.setEmail(email);
+        userDto.setUser_type(userType);
 
-        if (isRegistered) {
-            response.sendRedirect("success.jsp");
+        // Register user via service
+        String accountNumber = userService.registerUser(userDto);
+
+        // Redirect based on success or failure
+        if (accountNumber != null) {
+            // Pass generated account number to success page
+            response.sendRedirect("success.jsp?account=" + accountNumber);
         } else {
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("register.jsp?error=true");
         }
     }
 }
