@@ -1,19 +1,14 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Register</title>
+    <title>Staff Registration</title>
 </head>
 <body>
-<h2>User Registration</h2>
+<h2>Staff Registration</h2>
 <form action="register" method="post">
-
-    <input type="hidden" name="user_type" value="<%= (request.getAttribute("user_type") != null ? request.getAttribute("user_type") : "customer") %>">
-
-
     <label>Account Number:</label>
-    <input type="text" name="account_number" value="<%= request.getAttribute("account_number") %>" hidden="hidden"><br><br>
-
+    <input type="text" name="account_number" required><br><br>
 
     <label>Name:</label>
     <input type="text" name="name" required><br><br>
@@ -26,6 +21,9 @@
 
     <label>Email:</label>
     <input type="email" name="email" required><br><br>
+
+    <input type="hidden" name="user_type" value="staff">
+
 
     <button type="submit">Register</button>
 </form>
