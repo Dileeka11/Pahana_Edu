@@ -7,17 +7,20 @@ public class UserModel {
     private String address;
     private String telephone;
     private String email;
+    private String user_type;
+
 
     public UserModel() {
     }
 
-    public UserModel(int id, String account_number, String name, String address, String telephone, String email) {
+    public UserModel(int id, String account_number, String name, String address, String telephone, String email, String user_type) {
         this.id = id;
         this.account_number = account_number;
         this.name = name;
         this.address = address;
         this.telephone = telephone;
         this.email = email;
+        this.user_type = user_type;
     }
 
     public int getId() {
@@ -66,5 +69,13 @@ public class UserModel {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getUser_type() {
+        return user_type;
+    }
+
+    public void setUser_type(String user_type) {
+        this.user_type = user_type;
     }
 }
