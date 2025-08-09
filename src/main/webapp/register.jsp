@@ -6,14 +6,33 @@
 </head>
 <body>
 <h2>User Registration</h2>
-<form action="register" method="post">
 
+<%
+    String error = request.getParameter("error");
+    if ("empty".equals(error)) {
+%>
+<p style="color:red;">All fields are required.</p>
+<%
+} else if ("email".equals(error)) {
+%>
+<p style="color:red;">Email already exists.</p>
+<%
+} else if ("telephone".equals(error)) {
+%>
+<p style="color:red;">Telephone number already exists.</p>
+<%
+} else if ("unknown".equals(error)) {
+%>
+<p style="color:red;">An unknown error occurred.</p>
+<%
+    }
+%>
+
+<form action="register" method="post">
     <input type="hidden" name="user_type" value="<%= (request.getAttribute("user_type") != null ? request.getAttribute("user_type") : "customer") %>">
 
-
     <label>Account Number:</label>
-    <input type="text" name="account_number" value="<%= request.getAttribute("account_number") %>" hidden="hidden"><br><br>
-
+    <input type="text" name="account_number" value="<%= request.getAttribute("account_number") %>" readonly ><br><br>
 
     <label>Name:</label>
     <input type="text" name="name" required><br><br>

@@ -7,16 +7,18 @@ public class BookModel {
     private String description;
     private double price;
     private String photo;
+    private int qty;
 
     public BookModel() {}
 
-    public BookModel(int id, int categoryId, String name, String description, double price, String photo) {
+    public BookModel(int id, int categoryId, String name, String description, double price, String photo, int qty) {
         this.id = id;
         this.categoryId = categoryId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.photo = photo;
+        this.qty = qty;
     }
 
     // Getters & Setters
@@ -37,4 +39,7 @@ public class BookModel {
 
     public String getPhoto() { return photo; }
     public void setPhoto(String photo) { this.photo = photo; }
+
+    public int getQty() { return qty; }
+    public void setQty(int qty) { this.qty = qty; }
 }
