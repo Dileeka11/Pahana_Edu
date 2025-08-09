@@ -12,6 +12,7 @@
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
         form { display: inline; }
+        .units-cell { text-align: center; }
     </style>
 </head>
 <body>
@@ -24,6 +25,7 @@
         <th>Address</th>
         <th>Telephone</th>
         <th>Email</th>
+        <th>Units Consumed</th>
         <th>Actions</th>
     </tr>
     <%
@@ -38,8 +40,10 @@
             <td><input type="text" name="address" value="<%= user.getAddress() %>"></td>
             <td><input type="text" name="telephone" value="<%= user.getTelephone() %>"></td>
             <td><input type="email" name="email" value="<%= user.getEmail() %>"></td>
+            <td class="units-cell"><%= user.getUnitsConsumed() %></td>
             <td>
                 <input type="hidden" name="id" value="<%= user.getId() %>">
+                <input type="hidden" name="user_type" value="<%= user.getUser_type() %>">
                 <button type="submit" name="action" value="update">Update</button>
                 <button type="submit" name="action" value="delete" onclick="return confirm('Delete this user?')">Delete</button>
             </td>

@@ -24,28 +24,22 @@ public class RegisterServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Get user type from query param (staff or customer)
         String userType = request.getParameter("user_type");
         if (userType == null || userType.trim().isEmpty()) {
-            userType = "customer"; // Default if not provided
+            userType = "customer";
         }
 
-        // Set prefix for account number display
-        String prefix = "CUS00";
-        if ("staff".equalsIgnoreCase(userType)) {
-            prefix = "STF00";
-        }
+        UserService userService = new UserService();
+        String nextAccountNumber = userService.generateNextAccountNumber(userType);
 
-        // Display placeholder account number
-        String tempAccountNumber = prefix + "AUTO"; // Just for UI, real one will be generated after insert
-
-        request.setAttribute("account_number", tempAccountNumber);
+        request.setAttribute("account_number", nextAccountNumber);
         request.setAttribute("user_type", userType);
 
-        // Forward to JSP
         RequestDispatcher dispatcher = request.getRequestDispatcher("register.jsp");
         dispatcher.forward(request, response);
     }
+
+
 
     /**
      * Handles POST - Register User
@@ -54,19 +48,16 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Get form fields
         String name = request.getParameter("name");
         String address = request.getParameter("address");
         String telephone = request.getParameter("telephone");
         String email = request.getParameter("email");
         String userType = request.getParameter("user_type");
 
-        // Default to customer if missing
         if (userType == null || userType.trim().isEmpty()) {
             userType = "customer";
         }
 
-        // Create DTO
         Userdto userDto = new Userdto();
         userDto.setName(name);
         userDto.setAddress(address);
@@ -74,15 +65,30 @@ public class RegisterServlet extends HttpServlet {
         userDto.setEmail(email);
         userDto.setUser_type(userType);
 
-        // Register user via service
-        String accountNumber = userService.registerUser(userDto);
+        String result = userService.registerUser(userDto);
 
-        // Redirect based on success or failure
-        if (accountNumber != null) {
-            // Pass generated account number to success page
-            response.sendRedirect("success.jsp?account=" + accountNumber);
+        if (result == null) {
+            response.sendRedirect("register.jsp?error=unknown");
+        } else if (result.startsWith("error:")) {
+            // ⬇️ This is where you add the prefix logic for error case
+            String prefix = userDto.getUser_type().equalsIgnoreCase("staff") ? "STF00" : "CUS00";
+            String redirectParams = "register.jsp?error=" + result.substring(6) + "&account_number=" + prefix + "AUTO";
+            response.sendRedirect(redirectParams);
         } else {
-            response.sendRedirect("register.jsp?error=true");
+            // Get the redirectTo parameter if it exists
+            String redirectTo = request.getParameter("redirectTo");
+            if (redirectTo != null && !redirectTo.isEmpty()) {
+                // Extract the user ID from the result (assuming result is the account number)
+                // You might need to adjust this based on your actual account number format
+                String userId = result.replaceAll("[^0-9]", "");
+                response.sendRedirect(redirectTo + "?userId=" + userId);
+            } else {
+                // Original success redirect
+                response.sendRedirect("success.jsp?account=" + result);
+            }
         }
     }
+
+
+
 }
