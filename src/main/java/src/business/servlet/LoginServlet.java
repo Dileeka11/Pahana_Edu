@@ -28,21 +28,27 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        // ✅ Admin login (hardcoded)
+        // Admin login (hardcoded)
         if (email.equals(hardcodedEmail) && password.equals(hardcodedPassword)) {
             HttpSession session = request.getSession();
             session.setAttribute("user", "admin");
+            session.setAttribute("username", "Administrator"); 
             response.sendRedirect("admin/adminpanel.jsp");
             return;
         }
 
-        // ✅ Staff login with hashed password
-        Staffdto staff = staffService.authenticateStaff(email);  // Fetch staff by email only
+        // Staff login with hashed password
+        Staffdto staff = staffService.authenticateStaff(email);  
         if (staff != null && "Staff".equalsIgnoreCase(staff.getUser_type())) {
-            // ✅ Verify hashed password
+            // Verify hashed password
             if (BCrypt.checkpw(password, staff.getPassword())) {
                 HttpSession session = request.getSession();
-                session.setAttribute("staff", staff.getUsername());
+                session.setAttribute("staff", "Staff"); 
+                session.setAttribute("username", staff.getUsername()); 
+                // Store staffId for billing
+                session.setAttribute("staffId", staff.getId());
+                // Optionally store email
+                session.setAttribute("staffEmail", staff.getEmail());
                 response.sendRedirect("staff/staffpanel.jsp");
                 return;
             }

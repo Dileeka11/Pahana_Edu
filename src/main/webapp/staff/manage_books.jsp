@@ -30,7 +30,8 @@
     </select>
     <input type="text" name="name" placeholder="Book Name" required>
     <input type="text" name="description" placeholder="Description">
-    <input type="number" step="0.01" name="price" placeholder="Price">
+    <input type="number" step="0.01" name="price" placeholder="Price" required>
+    <input type="number" name="qty" value="1" min="0" required>
     <input type="file" name="photo">
     <button type="submit">Add</button>
 </form>
@@ -45,6 +46,7 @@
         <th>Name</th>
         <th>Description</th>
         <th>Price</th>
+        <th>Qty</th>
         <th>Photo</th>
         <th>Actions</th>
     </tr>
@@ -65,8 +67,9 @@
             <td><input type="text" name="name" value="<%= book.getName() %>"></td>
             <td><input type="text" name="description" value="<%= book.getDescription() %>"></td>
             <td><input type="number" step="0.01" name="price" value="<%= book.getPrice() %>"></td>
+            <td><input type="number" name="qty" value="<%= book.getQty() %>" min="0"></td>
             <td>
-                <% if (book.getPhoto() != null) { %>
+                <% if (book.getPhoto() != null && !book.getPhoto().isEmpty()) { %>
                 <img src="<%= book.getPhoto() %>" width="50">
                 <% } %>
                 <input type="file" name="photo">
@@ -75,7 +78,7 @@
             <td>
                 <input type="hidden" name="id" value="<%= book.getId() %>">
                 <button type="submit" name="action" value="update">Update</button>
-                <button type="submit" name="action" value="delete" onclick="return confirm('Delete this book?')">Delete</button>
+                <button type="submit" name="action" value="delete" onclick="return confirm('Are you sure?')">Delete</button>
             </td>
         </form>
     </tr>

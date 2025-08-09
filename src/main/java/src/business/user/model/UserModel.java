@@ -8,9 +8,11 @@ public class UserModel {
     private String telephone;
     private String email;
     private String user_type;
+    private int units_consumed;
 
 
     public UserModel() {
+        this.units_consumed = 0; // Default value
     }
 
     public UserModel(int id, String account_number, String name, String address, String telephone, String email, String user_type) {
@@ -21,6 +23,18 @@ public class UserModel {
         this.telephone = telephone;
         this.email = email;
         this.user_type = user_type;
+        this.units_consumed = 0; // Default value in constructor
+    }
+
+    public UserModel(int id, String account_number, String name, String address, String telephone, String email, String user_type, int units_consumed) {
+        this.id = id;
+        this.account_number = account_number;
+        this.name = name;
+        this.address = address;
+        this.telephone = telephone;
+        this.email = email;
+        this.user_type = user_type;
+        this.units_consumed = units_consumed;
     }
 
     public int getId() {
@@ -77,5 +91,13 @@ public class UserModel {
 
     public void setUser_type(String user_type) {
         this.user_type = user_type;
+    }
+
+    public int getUnitsConsumed() {
+        return units_consumed;
+    }
+
+    public void setUnitsConsumed(int units_consumed) {
+        this.units_consumed = units_consumed;
     }
 }
