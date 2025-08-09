@@ -2,6 +2,7 @@ package src.business.servlet;
 
 import src.business.user.dto.Userdto;
 import src.business.user.service.UserService;
+import src.business.user.model.UserModel;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -43,7 +44,12 @@ public class ManageUserServlet extends HttpServlet {
             String email = request.getParameter("email");
             String userType = request.getParameter("user_type");
 
-            Userdto dto = new Userdto(id, null, name, address, telephone, email, userType);
+            // Get the existing user to preserve the units_consumed value
+            UserModel existingUser = userService.findUserByEmailOrPhone(email);
+            int unitsConsumed = (existingUser != null) ? existingUser.getUnitsConsumed() : 0;
+
+            // Create DTO with the existing units_consumed value
+            Userdto dto = new Userdto(id, null, name, address, telephone, email, userType, unitsConsumed);
             userService.updateUser(dto);
         }
 

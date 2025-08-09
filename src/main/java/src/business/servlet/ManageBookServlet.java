@@ -45,30 +45,14 @@ public class ManageBookServlet extends HttpServlet {
             String name = request.getParameter("name");
             String description = request.getParameter("description");
             double price = Double.parseDouble(request.getParameter("price"));
+            int qty = Integer.parseInt(request.getParameter("qty"));
 
             Part filePart = request.getPart("photo");
             String fileName = filePart.getSubmittedFileName();
-            String uploadPath = getServletContext().getRealPath("") + "uploads";
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) uploadDir.mkdir();
-            String filePath = uploadPath + File.separator + fileName;
-            filePart.write(filePath);
+            String photo = null;
 
-            BookDto book = new BookDto(0, categoryId, name, description, price, "uploads/" + fileName);
-            bookService.addBook(book);
-
-        } else if ("update".equals(action)) {
-            int id = Integer.parseInt(request.getParameter("id"));
-            int categoryId = Integer.parseInt(request.getParameter("category_id"));
-            String name = request.getParameter("name");
-            String description = request.getParameter("description");
-            double price = Double.parseDouble(request.getParameter("price"));
-            String photo = request.getParameter("existingPhoto");
-
-            Part filePart = request.getPart("photo");
-            if (filePart != null && filePart.getSize() > 0) {
-                String fileName = filePart.getSubmittedFileName();
-                String uploadPath = getServletContext().getRealPath("") + "uploads";
+            if (fileName != null && !fileName.isEmpty()) {
+                String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
                 File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) uploadDir.mkdir();
                 String filePath = uploadPath + File.separator + fileName;
@@ -76,7 +60,33 @@ public class ManageBookServlet extends HttpServlet {
                 photo = "uploads/" + fileName;
             }
 
-            bookService.updateBook(new BookDto(id, categoryId, name, description, price, photo));
+            bookService.addBook(new BookDto(0, categoryId, name, description, price, photo, qty));
+
+        } else if ("update".equals(action)) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            int categoryId = Integer.parseInt(request.getParameter("category_id"));
+            String name = request.getParameter("name");
+            String description = request.getParameter("description");
+            double price = Double.parseDouble(request.getParameter("price"));
+            int qty = Integer.parseInt(request.getParameter("qty"));
+
+            // Get existing book to preserve photo if not updated
+            BookDto existingBook = bookService.getBookById(id);
+            String photo = existingBook.getPhoto();
+
+            Part filePart = request.getPart("photo");
+            String fileName = filePart.getSubmittedFileName();
+
+            if (fileName != null && !fileName.isEmpty()) {
+                String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists()) uploadDir.mkdir();
+                String filePath = uploadPath + File.separator + fileName;
+                filePart.write(filePath);
+                photo = "uploads/" + fileName;
+            }
+
+            bookService.updateBook(new BookDto(id, categoryId, name, description, price, photo, qty));
 
         } else if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
