@@ -32,7 +32,8 @@
     <div>
         <h2>Quick Actions</h2>
         <ul>
-            <li><a href="${pageContext.request.contextPath}/staff/check-user.jsp">Check User</a></li>
+            <li><a href="${pageContext.request.contextPath}/staff/user-lookup.jsp">Check User</a></li>
+            <li><a href="${pageContext.request.contextPath}/register?user_type=customer&redirectTo=${pageContext.request.contextPath}/staff/user-lookup.jsp">Register User</a></li>
             <li><a href="${pageContext.request.contextPath}/logout.jsp">Logout</a></li>
         </ul>
     </div>
