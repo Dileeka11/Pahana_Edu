@@ -40,6 +40,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Checkout</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="${pageContext.request.contextPath}/assets/img/logo.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/img/logo.png" />
+    <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/img/favicon.ico" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/navbar.css?v=1" />
     <style>
         body { font-family: Arial, sans-serif; background: #f5f6fa; margin: 0; padding: 20px; }
         .container { max-width: 1100px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; }
@@ -67,6 +71,8 @@
     </style>
 </head>
 <body>
+<% request.setAttribute("activePage", "checkout"); %>
+<%@ include file="/staff/includes/navbar.jsp" %>
 <div class="container">
     <div class="header">
         <h2 style="margin:0;">Checkout</h2>
