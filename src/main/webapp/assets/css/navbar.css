@@ -1,0 +1,67 @@
+/* Staff Navbar Styles */
+.staff-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 16px;
+    background: #0f172a; /* slate-900 */
+    color: #e5e7eb;      /* gray-200 */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.staff-navbar a {
+    color: #e5e7eb;
+    text-decoration: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.staff-navbar a:hover {
+    background: #1f2937; /* gray-800 */
+    color: #ffffff;
+}
+.staff-brand {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+/* Brand link layout with logo */
+.staff-brand-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+.staff-logo {
+    height: 28px;
+    width: auto;
+    display: block;
+}
+.staff-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.staff-user {
+    margin-left: 12px;
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+.active-link {
+    background: #334155; /* slate-700 */
+    color: #ffffff !important;
+}
+
+/* Small screens */
+@media (max-width: 600px) {
+    .staff-navbar {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .staff-links {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+}

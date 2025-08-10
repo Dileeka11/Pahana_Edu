@@ -30,6 +30,7 @@
 
 <form action="register" method="post">
     <input type="hidden" name="user_type" value="<%= (request.getAttribute("user_type") != null ? request.getAttribute("user_type") : "customer") %>">
+    <input type="hidden" name="redirectTo" value="<%= request.getParameter("redirectTo") != null ? request.getParameter("redirectTo") : "" %>">
 
     <label>Account Number:</label>
     <input type="text" name="account_number" value="<%= request.getAttribute("account_number") %>" readonly ><br><br>

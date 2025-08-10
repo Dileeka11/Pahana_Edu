@@ -30,7 +30,7 @@
                         <% if (request.getAttribute("error") != null) { %>
                             <div class="alert alert-danger" role="alert">
                                 <%= request.getAttribute("error") %>
-                                <a href="<%= request.getContextPath() %>/register" class="alert-link">Register as new user</a>
+                                <a href="<%= request.getContextPath() %>/register?user_type=customer&redirectTo=<%= request.getContextPath() %>/staff/user-lookup.jsp" class="alert-link">Register as new user</a>
                             </div>
                         <% } %>
 
@@ -47,7 +47,7 @@
                         </form>
 
                         <div class="mt-3 text-center">
-                            <p>New user? <a href="<%= request.getContextPath() %>/register">Register here</a></p>
+                            <p>New user? <a href="<%= request.getContextPath() %>/register?user_type=customer&redirectTo=<%= request.getContextPath() %>/staff/user-lookup.jsp">Register here</a></p>
                         </div>
                     </div>
                 </div>
