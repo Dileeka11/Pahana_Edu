@@ -48,6 +48,7 @@
     BookDAO bookDAO = new BookDAO();
     Map<Integer, BookModel> bookDetails = new HashMap<>();
     double total = 0.0;
+    int totalItems = 0;
 
     for (Map.Entry<Integer, Integer> entry : cart.entrySet()) {
         int bookId = entry.getKey();
@@ -56,213 +57,108 @@
         if (book != null) {
             bookDetails.put(bookId, book);
             total += book.getPrice() * quantity;
+            totalItems += quantity;
         }
     }
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>View Cart</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1000px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            margin-top: 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        tr:hover {
-            background-color: #e9e9e9;
-        }
-        .quantity-input {
-            width: 60px;
-            padding: 6px;
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .action-button {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            margin: 2px;
-        }
-        .action-button.update {
-            background-color: #4CAF50;
-        }
-        .action-button.remove {
-            background-color: #f44336;
-        }
-        .action-button:hover {
-            opacity: 0.9;
-        }
-        .cart-summary {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #e9f7ef;
-            border-radius: 5px;
-            text-align: right;
-        }
-        .total-amount {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .empty-cart {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-        .continue-shopping {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #6c757d;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-        .continue-shopping:hover {
-            background-color: #5a6268;
-        }
-        .checkout-btn {
-            display: inline-block;
-            margin-left: 10px;
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .checkout-btn:hover {
-            background-color: #218838;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Shopping Cart | Pahana Edu</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/cart.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <h1>Your Shopping Cart</h1>
+    <div class="container">
+        <div class="cart-header">
+            <h1>Your Shopping Cart</h1>
+            <p><%= totalItems %> <%= totalItems == 1 ? "item" : "items" %> in your cart</p>
+        </div>
 
-    <% if (cart.isEmpty()) { %>
-    <div class="empty-cart">
-        <h2>Your cart is empty</h2>
-        <p>Looks like you haven't added any items to your cart yet.</p>
-        <a href="select_books.jsp" class="continue-shopping">Continue Shopping</a>
-    </div>
-    <% } else { %>
-    <form method="post" action="view_cart.jsp">
-        <table>
-            <thead>
-            <tr>
-                <th>Book</th>
-                <th>Title</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% for (Map.Entry<Integer, Integer> entry : cart.entrySet()) {
-                int bookId = entry.getKey();
-                int quantity = entry.getValue();
-                BookModel book = bookDetails.get(bookId);
-                if (book != null) {
-                    double itemTotal = book.getPrice() * quantity;
-            %>
-            <tr>
-                <td>
-                    <img src="${pageContext.request.contextPath}/uploads/<%= book.getPhoto() %>"
-                         alt="<%= book.getName() %>"
-                         width="50"
-                         style="border-radius: 4px;">
-                </td>
-                <td><%= book.getName() %></td>
-                <td>Rs. <%= String.format("%.2f", book.getPrice()) %></td>
-                <td>
-                    <input type="hidden" name="bookId" value="<%= bookId %>">
-                    <input type="number"
-                           name="quantity"
-                           class="quantity-input"
-                           min="1"
-                           max="<%= book.getQty() %>"
-                           value="<%= quantity %>">
-                </td>
-                <td>Rs. <%= String.format("%.2f", itemTotal) %></td>
-                <td>
-                    <button type="submit"
-                            name="removeFromCart"
-                            value="<%= bookId %>"
-                            class="action-button remove"
-                            onclick="return confirm('Are you sure you want to remove this item?')">
-                        Remove
-                    </button>
-                </td>
-            </tr>
-            <% }
-            } %>
-            </tbody>
-        </table>
+        <% if (cart.isEmpty()) { %>
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart"></i>
+                <h2>Your cart is empty</h2>
+                <p>Looks like you haven't added any books to your cart yet.</p>
+                <a href="books.jsp" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Continue Shopping
+                </a>
+            </div>
+        <% } else { %>
+            <div class="cart-layout">
+                <form action="view_cart.jsp" method="post" id="cart-form" class="cart-items">
+                    <input type="hidden" name="updateCart" value="true">
 
-        <div class="cart-summary">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <a href="select_books.jsp" class="continue-shopping">Continue Shopping</a>
-                <div>
-                    <span style="margin-right: 20px;">Total: <span class="total-amount">Rs. <%= String.format("%.2f", total) %></span></span>
-                    <button type="submit" name="updateCart" class="action-button update">Update Cart</button>
-                    <a href="<%= request.getContextPath() %>/checkout" class="checkout-btn">Proceed to Checkout</a>
+                    <% for (Map.Entry<Integer, Integer> entry : cart.entrySet()) {
+                        int bookId = entry.getKey();
+                        int quantity = entry.getValue();
+                        BookModel book = bookDetails.get(bookId);
+                        if (book != null) {
+                            double itemTotal = book.getPrice() * quantity;
+                    %>
+                        <div class="cart-item" data-book-id="<%= bookId %>">
+
+                            <div class="item-details">
+                                <h3 class="item-title"><%= book.getName() %></h3>
+                                <p class="item-author">By <%= book.getDescription() %></p>
+                                <p class="item-price">Rs. <%= String.format("%.2f", book.getPrice()) %></p>
+                                <div class="item-actions">
+                                    <button type="button" class="btn-remove" onclick="removeItem(<%= bookId %>)">
+                                        <i class="fas fa-trash-alt"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-book-id="<%= bookId %>">-</button>
+                                <input type="number"
+                                       name="quantity"
+                                       class="quantity-input"
+                                       value="<%= quantity %>"
+                                       min="1"
+                                       data-book-id="<%= bookId %>">
+                                <button type="button" class="quantity-btn plus" data-book-id="<%= bookId %>">+</button>
+                            </div>
+                            <input type="hidden" name="bookId" value="<%= bookId %>">
+                        </div>
+                    <% }
+                    } %>
+                </form>
+
+                <div class="summary-card">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal (<%= totalItems %> <%= totalItems == 1 ? "item" : "items" %>)</span>
+                        <span>Rs. <%= String.format("%.2f", total) %></span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>Rs. <%= String.format("%.2f", total) %></span>
+                    </div>
+                    <div class="summary-actions">
+                        <button type="submit" form="cart-form" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Update Cart
+                        </button>
+                        <a href="checkout.jsp" class="btn btn-checkout">
+                            Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                        </a>
+                        <br/>
+                        <a href="select_books.jsp" class="btn btn-outline">
+                            <i class="fas fa-arrow-left"></i> Continue Shopping
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
-    <% } %>
-</div>
+        <% } %>
+    </div>
 
-<script>
-    // Add confirmation before removing item
-    document.querySelectorAll('button[name="removeFromCart"]').forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (!confirm('Are you sure you want to remove this item from your cart?')) {
-                e.preventDefault();
-            }
-        });
-    });
-</script>
+    <script src="<%= request.getContextPath() %>/assets/js/cart.js"></script>
 </body>
 </html>
