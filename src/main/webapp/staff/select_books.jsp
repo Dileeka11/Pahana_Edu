@@ -25,10 +25,12 @@
             int available = _book.getQty() - inCart;
             if (available <= 0 || quantity > available) {
                 request.setAttribute("message", "Insufficient stock for '" + _book.getName() + "'. Requested " + quantity + ", available " + Math.max(available, 0) + ".");
+                request.setAttribute("messageType", "error");
             } else {
                 cart.put(bookId, inCart + quantity);
                 session.setAttribute("cart", cart);
                 request.setAttribute("message", "Added " + quantity + " x '" + _book.getName() + "' to cart.");
+                request.setAttribute("messageType", "success");
             }
         }
     }
@@ -52,269 +54,221 @@
             bookList.removeIf(book -> !book.getName().toLowerCase().contains(searchLower));
         }
     }
+
+    // Get cart size for the badge
+    Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
+    int cartSize = cart != null ? cart.size() : 0;
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Select Books</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Books - Pahana Edu</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/select_books.css">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
+        /* Inline styles for critical content only */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
         }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .search-container {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+
+        .fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
         }
-        .search-container input[type="text"] {
-            padding: 10px;
-            margin-right: 10px;
-            width: 300px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
-        .search-container button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .search-container button:hover {
-            background-color: #45a049;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        tr:hover {
-            background-color: #e9e9e9;
-        }
-        .quantity-input {
-            width: 60px;
-            padding: 6px;
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .add-to-cart {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .add-to-cart:hover {
-            background-color: #0b7dda;
-        }
-        .cart-summary {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #e9f7ef;
-            border-radius: 5px;
-        }
-        .cart-summary h3 {
-            margin-top: 0;
-            color: #2c3e50;
-        }
-        .cart-summary a {
-            color: #2196F3;
-            text-decoration: none;
-            font-weight: bold;
-            margin-right: 15px;
-        }
-        .cart-summary a:hover {
-            text-decoration: underline;
-        }
-        .clear-search {
-            margin-left: 10px;
-            color: #666;
-            text-decoration: none;
-        }
-        .clear-search:hover {
-            text-decoration: underline;
-        }
-        .alert {
-            margin: 10px 0 0;
-            padding: 10px 14px;
-            border-radius: 4px;
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-        }
-        .muted { color: #888; font-size: 12px; }
-        .disabled { opacity: 0.6; pointer-events: none; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>Available Books</h1>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-book-open"></i> Select Books</h1>
+        </header>
 
-    <% if (request.getAttribute("message") != null) { %>
-        <div class="alert"><%= request.getAttribute("message") %></div>
-    <% } %>
-
-    <!-- Search Form -->
-    <div class="search-container">
-        <form method="get" action="">
-            <input type="text"
-                   name="searchTerm"
-                   placeholder="Search by ID or Book Name"
-                   value="<%= searchTerm != null ? searchTerm : "" %>"
-                   aria-label="Search books">
-            <button type="submit">Search</button>
-            <% if (searchTerm != null && !searchTerm.isEmpty()) { %>
-            <a href="select_books.jsp" class="clear-search">Clear Search</a>
-            <% } %>
-        </form>
-    </div>
-
-    <!-- Books Table -->
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price (Rs.)</th>
-            <th>Available</th>
-            <th>Quantity</th>
-            <th>Action</th>
-            <th>Photo</th>
-        </tr>
-        </thead>
-        <tbody>
-        <% if (bookList != null && !bookList.isEmpty()) {
-            for (BookModel book : bookList) {
+        <!-- Alert Messages -->
+        <% if (request.getAttribute("message") != null) {
+            String messageType = (String) request.getAttribute("messageType") != null ?
+                (String) request.getAttribute("messageType") : "info";
         %>
-        <tr data-book-id="<%= book.getId() %>" data-available="<%= book.getQty() %>">
-            <td><%= book.getId() %></td>
-            <td><%= book.getName() %></td>
-            <td><%= book.getDescription() %></td>
-            <td><%= String.format("%.2f", book.getPrice()) %></td>
-            <td>
-                <%= book.getQty() %>
-                <% if (book.getQty() <= 0) { %>
-                    <div class="muted">Out of stock</div>
-                <% } %>
-            </td>
-            <td>
-                <input type="number"
-                       class="quantity-input"
-                       name="quantity"
-                       min="1"
-                       max="<%= book.getQty() %>"
-                       value="1" <%= book.getQty() <= 0 ? "disabled" : "" %>>
-            </td>
-            <td>
-                <form method="post" action="" style="margin: 0;" class="add-to-cart-form">
-                    <input type="hidden" name="bookId" value="<%= book.getId() %>">
-                    <input type="hidden" name="quantity" value="1" class="quantity-field">
-                    <button type="submit" name="addToCart" class="add-to-cart" <%= book.getQty() <= 0 ? "disabled" : "" %>>Add to Cart</button>
-                </form>
-            </td>
-            <td>
-                <img src="${pageContext.request.contextPath}/uploads/<%= book.getPhoto() %>"
-                     alt="<%= book.getName() %>"
-                     width="50"
-                     style="border-radius: 4px;">
-            </td>
-        </tr>
-        <% }
-        } else {
-        %>
-        <tr>
-            <td colspan="8" style="text-align: center; padding: 20px;">
-                No books found matching your criteria.
-            </td>
-        </tr>
+            <div class="alert-message alert-<%= messageType %> fade-in">
+                <%= request.getAttribute("message") %>
+                <button class="close-alert" aria-label="Close">&times;</button>
+            </div>
         <% } %>
-        </tbody>
-    </table>
 
-    <!-- Cart Summary -->
-    <div class="cart-summary">
-        <h3>Your Cart</h3>
-        <%
-            @SuppressWarnings("unchecked")
-            Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
-            if (cart != null && !cart.isEmpty()) {
-        %>
-        <p>You have <%= cart.size() %> item(s) in your cart.</p>
-        <a href="view_cart.jsp">View Cart</a>
-        <a href="<%= request.getContextPath() %>/checkout?customerId=<%= request.getParameter("customerId") %>">Proceed to Checkout</a>
-        <%
-        } else {
-        %>
-        <p>Your cart is empty.</p>
-        <%
-            }
-        %>
+        <!-- Search Bar -->
+        <div class="search-container">
+            <form method="get" action="" class="search-form">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text"
+                           name="searchTerm"
+                           class="search-input"
+                           placeholder="Search by ID or book name..."
+                           value="<%= searchTerm != null ? searchTerm : "" %>"
+                           aria-label="Search books">
+                    <% if (searchTerm != null && !searchTerm.isEmpty()) { %>
+                        <a href="select_books.jsp" class="clear-search" title="Clear search">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    <% } %>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </form>
+        </div>
+
+        <!-- Books Table -->
+        <div class="table-container">
+            <% if (bookList != null && !bookList.isEmpty()) { %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Details</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Quantity</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (BookModel book : bookList) {
+                            int available = book.getQty();
+                            boolean isOutOfStock = available <= 0;
+                        %>
+                            <tr data-book-id="<%= book.getId() %>" data-available="<%= available %>">
+                                <td class="book-info">
+
+                                    <div class="book-meta">
+                                        <h3><%= book.getName() %></h3>
+                                        <p class="text-muted">ID: <%= book.getId() %></p>
+                                    </div>
+                                </td>
+                                <td class="book-description">
+                                    <p><%= book.getDescription() %></p>
+                                </td>
+                                <td class="book-price">
+                                    <span class="price">Rs. <%= String.format("%.2f", book.getPrice()) %></span>
+                                </td>
+                                <td class="book-status">
+                                    <% if (isOutOfStock) { %>
+                                        <span class="status-badge status-out-of-stock">Out of Stock</span>
+                                    <% } else { %>
+                                        <span class="status-badge status-available">In Stock</span>
+                                        <p class="stock-available"><%= available %> available</p>
+                                    <% } %>
+                                </td>
+                                <td class="book-quantity">
+                                    <input type="number"
+                                           class="quantity-input"
+                                           name="quantity"
+                                           min="1"
+                                           max="<%= available %>"
+                                           value="1"
+                                           <%= isOutOfStock ? "disabled" : "" %>>
+                                </td>
+                                <td class="book-actions">
+                                    <form method="post" action="" class="add-to-cart-form">
+                                        <input type="hidden" name="bookId" value="<%= book.getId() %>">
+                                        <input type="hidden" name="quantity" value="1" class="quantity-field">
+                                        <button type="submit"
+                                                name="addToCart"
+                                                class="btn btn-primary add-to-cart"
+                                                <%= isOutOfStock ? "disabled" : "" %>
+                                                data-tooltip="<%= isOutOfStock ? "Out of stock" : "Add to cart" %>">
+                                            <i class="fas fa-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <div class="no-books">
+                    <i class="fas fa-book-open fa-3x"></i>
+                    <h3>No books found</h3>
+                    <p>No books match your search criteria. Try a different search term.</p>
+                    <a href="select_books.jsp" class="btn btn-outline">
+                        <i class="fas fa-undo"></i> Clear Search
+                    </a>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="cart-summary">
+            <div class="cart-info">
+                <div class="cart-count"><%= cartSize %></div>
+                <div>
+                    <h3>Your Shopping Cart</h3>
+                    <p class="text-muted"><%= cartSize == 0 ? "Your cart is empty" : (cartSize + (cartSize > 1 ? " items" : " item") + " in cart") %></p>
+                </div>
+            </div>
+            <div class="cart-actions">
+                <% if (cartSize > 0) { %>
+                    <a href="view_cart.jsp" class="btn btn-outline">
+                        <i class="fas fa-shopping-cart"></i> View Cart
+                    </a>
+                    <a href="<%= request.getContextPath() %>/checkout?customerId=<%= request.getParameter("customerId") %>"
+                       class="btn btn-primary">
+                        <i class="fas fa-credit-card"></i> Proceed to Checkout
+                    </a>
+                <% } else { %>
+                    <p class="text-muted mb-0">Add items to your cart to continue</p>
+                <% } %>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-    // Update and clamp the visible quantity input and sync hidden field
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', function() {
-            const max = parseInt(this.getAttribute('max')) || 1;
-            let val = parseInt(this.value) || 1;
-            if (val < 1) val = 1;
-            if (val > max) val = max;
-            this.value = val;
-            const form = this.closest('tr').querySelector('form.add-to-cart-form');
-            if (form) form.querySelector('.quantity-field').value = this.value;
-        });
-    });
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    // Validate quantity against available stock on submit
-    document.querySelectorAll('form.add-to-cart-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            const row = this.closest('tr');
-            const available = parseInt(row.dataset.available || '0');
-            const qtyInput = row.querySelector('.quantity-input');
-            const hidden = row.querySelector('.quantity-field');
-            const qty = parseInt(qtyInput ? qtyInput.value : hidden.value) || 1;
-            if (qty < 1 || qty > available) {
-                e.preventDefault();
-                alert('Insufficient stock. Requested ' + qty + ', available ' + available + '.');
-            } else {
-                // ensure hidden field matches
-                hidden.value = qty;
+    <!-- Custom JavaScript -->
+    <script src="${pageContext.request.contextPath}/assets/js/select_books.js"></script>
+
+    <script>
+        // Close alert button
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.close-alert').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.alert-message').remove();
+                });
+            });
+
+            // Auto-hide success messages after 5 seconds
+            const successAlert = document.querySelector('.alert-success');
+            if (successAlert) {
+                setTimeout(() => {
+                    successAlert.classList.add('fade-out');
+                    setTimeout(() => successAlert.remove(), 300);
+                }, 5000);
             }
         });
-    });
-</script>
+    </script>
 </body>
 </html>
