@@ -91,4 +91,23 @@ public class BookService {
             return false;
         }
     }
+
+    public Object[] getTopSellingBook() {
+        try {
+            return bookDAO.getTopSellingBook();
+        } catch (Exception e) {
+            System.err.println("Error getting top selling book: " + e.getMessage());
+            e.printStackTrace();
+            return new Object[0];
+        }
+    }
+//    public long getTotalBooksCount() {
+//        try {
+//            return bookDAO.getTotalBooksCount();
+//        } catch (Exception e) {
+//            System.err.println("Error getting total books count: " + e.getMessage());
+//            e.printStackTrace();
+//            return 0;
+//        }
+//    }
 }

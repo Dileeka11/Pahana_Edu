@@ -184,4 +184,49 @@ public class BookDAO {
         }
         return null;
     }
+
+    public Object[] getTopSellingBook() {
+        System.out.println("BookDAO: Getting top selling book...");
+        String sql = "SELECT b.id, b.name, b.price, b.photo, SUM(bi.quantity) as total_sold " +
+                "FROM books b " +
+                "JOIN bill_items bi ON b.id = bi.book_id " +
+                "GROUP BY b.id, b.name, b.price, b.photo " +
+                "ORDER BY total_sold DESC " +
+                "LIMIT 1";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            System.out.println("BookDAO: Successfully connected to database");
+
+            if (rs.next()) {
+                Object[] result = new Object[5];
+                result[0] = rs.getInt("id");
+                result[1] = rs.getString("name");
+                result[2] = rs.getDouble("price");
+                result[3] = rs.getString("photo");
+                result[4] = rs.getInt("total_sold");
+
+                System.out.println("BookDAO: Found top selling book: " + result[1]);
+                return result;
+            } else {
+                System.out.println("BookDAO: No sales data found, returning default values");
+                // Return an array with default values when no sales data exists
+                Object[] defaultResult = new Object[5];
+                defaultResult[1] = "No sales data";  // name
+                defaultResult[4] = 0;  // total_sold
+                return defaultResult;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("BookDAO: Error executing query: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to retrieve top selling book", e);
+        } catch (Exception e) {
+            System.err.println("BookDAO: Unexpected error: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Unexpected error in BookDAO", e);
+        }
+    }
 }
