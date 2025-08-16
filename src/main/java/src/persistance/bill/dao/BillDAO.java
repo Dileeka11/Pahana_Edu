@@ -74,4 +74,46 @@ public class BillDAO {
 
         return list;
     }
+
+    public int countBillsForDate(String date) {
+        String sql = "SELECT COUNT(*) as count FROM bill WHERE DATE(date) = ?";
+        int count = 0;
+        
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, date);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    count = rs.getInt("count");
+                }
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return count;
+    }
+
+    public double getTotalSalesForDate(String date) {
+        String sql = "SELECT COALESCE(SUM(total), 0) as total_sales FROM bill WHERE DATE(date) = ?";
+        double totalSales = 0.0;
+        
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, date);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    totalSales = rs.getDouble("total_sales");
+                }
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return totalSales;
+    }
 }

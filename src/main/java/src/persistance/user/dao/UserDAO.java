@@ -255,4 +255,19 @@ public class UserDAO {
         }
         return null;
     }
+
+    public int getTotalUsersCount() {
+        String sql = "SELECT COUNT(*) as total FROM user";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

@@ -77,4 +77,10 @@ public class UserService {
     public UserModel getUserById(int id) {
         return userDAO.getUserById(id);
     }
+
+    // In UserService.java
+    public int getTotalUsersCount() {
+        return userDAO.getTotalUsersCount();
+    }
+
 }
