@@ -33,7 +33,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("user", "admin");
             session.setAttribute("username", "Administrator"); 
-            response.sendRedirect("admin/adminpanel.jsp");
+            response.sendRedirect("admin/dashboard.jsp");
             return;
         }
 

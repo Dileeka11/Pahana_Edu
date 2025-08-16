@@ -23,4 +23,12 @@ public class BillService {
                 .map(BillMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    public int countBillsForDate(String date) {
+        return billDAO.countBillsForDate(date);
+    }
+
+    public double getTotalSalesForDate(String date) {
+        return billDAO.getTotalSalesForDate(date);
+    }
 }

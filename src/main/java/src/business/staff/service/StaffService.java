@@ -22,4 +22,9 @@ public class StaffService {
         return staff != null ? StaffMapper.toDto(staff) : null;
     }
 
+    // In StaffService.java
+    public int getTotalStaffCount() {
+        return staffDAO.getTotalStaffCount();
+    }
+
 }
