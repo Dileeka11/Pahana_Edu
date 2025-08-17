@@ -21,10 +21,10 @@
     <a href="${ctx}/manage-books"
        class="<c:if test='${activePage == "checkout"}'>active-link</c:if>">Manage Books</a>
 
-    <a href="${ctx}/staff/manage_users.jsp"
+    <a href="${ctx}/manage-users"
        class="<c:if test='${activePage == "checkout"}'>active-link</c:if>">Manage Users</a>
 
-    <a href="${ctx}/staff/manage-categories"
+    <a href="${ctx}/manage-categories"
        class="<c:if test='${activePage == "checkout"}'>active-link</c:if>">Manage Categories</a>
 
     <a href="${ctx}/staff/checkout.jsp"

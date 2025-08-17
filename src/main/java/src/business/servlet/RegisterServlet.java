@@ -83,8 +83,8 @@ public class RegisterServlet extends HttpServlet {
                 String userId = result.replaceAll("[^0-9]", "");
                 response.sendRedirect(redirectTo + "?userId=" + userId);
             } else {
-                // Original success redirect
-                response.sendRedirect("success.jsp?account=" + result);
+                // Redirect to manage_users.jsp after successful registration
+                response.sendRedirect("manage-users");
             }
         }
     }

@@ -420,7 +420,7 @@
                 </div>
                 <h3 class="feature-title">Manage Users</h3>
                 <p class="feature-desc">View, update, and support user accounts. Handle user registrations and account management.</p>
-                <a href="${ctx}/staff/manage_users.jsp" class="feature-link">
+                <a href="${ctx}/manage-users" class="feature-link">
                     Go to Users <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
@@ -433,7 +433,7 @@
                 </div>
                 <h3 class="feature-title">Manage Categories</h3>
                 <p class="feature-desc">Create and maintain content categories. Organize your library with custom taxonomies.</p>
-                <a href="${ctx}/staff/manage-categories" class="feature-link">
+                <a href="${ctx}/manage-categories" class="feature-link">
                     Go to Categories <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
