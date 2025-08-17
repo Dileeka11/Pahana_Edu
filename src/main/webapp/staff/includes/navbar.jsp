@@ -18,15 +18,20 @@
     <a href="${ctx}/staff/staffpanel.jsp"
        class="<c:if test='${activePage == "dashboard"}'>active-link</c:if>">Dashboard</a>
 
+    <a href="${ctx}/manage-books"
+       class="<c:if test='${activePage == "checkout"}'>active-link</c:if>">Manage Books</a>
+
+    <a href="${ctx}/manage-users"
+       class="<c:if test='${activePage == "checkout"}'>active-link</c:if>">Manage Users</a>
+
+    <a href="${ctx}/manage-categories"
+       class="<c:if test='${activePage == "checkout"}'>active-link</c:if>">Manage Categories</a>
+
     <a href="${ctx}/staff/checkout.jsp"
        class="<c:if test='${activePage == "checkout"}'>active-link</c:if>">Checkout</a>
 
-    <!-- Example extra links: uncomment and set activePage accordingly
-    <a href="${ctx}/staff/books.jsp"
-       class="<c:if test='${activePage == "books"}'>active-link</c:if>">Books</a>
-    <a href="${ctx}/staff/billing.jsp"
-       class="<c:if test='${activePage == "billing"}'>active-link</c:if>">Billing</a>
-    -->
+
+
 
     <span class="staff-user">
       <c:choose>

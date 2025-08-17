@@ -33,7 +33,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("user", "admin");
             session.setAttribute("username", "Administrator"); 
-            response.sendRedirect("admin/dashboard.jsp");
+            response.sendRedirect("admin/dashboard.jsp?login=success");
             return;
         }
 
@@ -49,7 +49,7 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("staffId", staff.getId());
                 // Optionally store email
                 session.setAttribute("staffEmail", staff.getEmail());
-                response.sendRedirect("staff/staffpanel.jsp");
+                response.sendRedirect("staff/staffpanel.jsp?login=success");
                 return;
             }
         }

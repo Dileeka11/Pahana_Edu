@@ -23,36 +23,76 @@ public class ManageUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         List<Userdto> users = userService.getAllUsers();
         request.setAttribute("users", users);
+
+        // --- FLASH MESSAGES (session -> request) ---
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object msg = session.getAttribute("message");
+            Object type = session.getAttribute("messageType");
+            if (msg != null) {
+                request.setAttribute("message", msg);
+                request.setAttribute("messageType", type != null ? type : "info");
+                session.removeAttribute("message");
+                session.removeAttribute("messageType");
+            }
+        }
+
         request.getRequestDispatcher("staff/manage_users.jsp").forward(request, response);
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String action = request.getParameter("action");
+        HttpSession session = request.getSession(); // for flash
 
-        if ("delete".equals(action)) {
-            int id = Integer.parseInt(request.getParameter("id"));
-            userService.deleteUser(id);
-        } else if ("update".equals(action)) {
-            int id = Integer.parseInt(request.getParameter("id"));
-            String name = request.getParameter("name");
-            String address = request.getParameter("address");
-            String telephone = request.getParameter("telephone");
-            String email = request.getParameter("email");
-            String userType = request.getParameter("user_type");
+        try {
+            if ("delete".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                userService.deleteUser(id);
 
-            // Get the existing user to preserve the units_consumed value
-            UserModel existingUser = userService.findUserByEmailOrPhone(email);
-            int unitsConsumed = (existingUser != null) ? existingUser.getUnitsConsumed() : 0;
+                session.setAttribute("message", "User deleted successfully!");
+                session.setAttribute("messageType", "success");
 
-            // Create DTO with the existing units_consumed value
-            Userdto dto = new Userdto(id, null, name, address, telephone, email, userType, unitsConsumed);
-            userService.updateUser(dto);
+            } else if ("update".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                String name = request.getParameter("name");
+                String address = request.getParameter("address");
+                String telephone = request.getParameter("telephone");
+                String email = request.getParameter("email");
+                String userType = request.getParameter("user_type");
+
+                // ⚠️ Safer: fetch existing by ID (email/phone might be changing)
+                // Add userService.getById(id) in your service if you don't have it yet.
+                UserModel existingUser = userService.getUserById(id);
+                int unitsConsumed = (existingUser != null) ? existingUser.getUnitsConsumed() : 0;
+
+                Userdto dto = new Userdto(id, null, name, address, telephone, email, userType, unitsConsumed);
+                userService.updateUser(dto);
+
+                session.setAttribute("message", "User updated successfully!");
+                session.setAttribute("messageType", "success");
+
+            } else if ("add".equals(action)) {
+                // If you add “create” here in the future:
+                // userService.addUser(...);
+                session.setAttribute("message", "User added successfully!");
+                session.setAttribute("messageType", "success");
+            }
+
+        } catch (Exception e) {
+            // Optional: log e for debugging
+            session.setAttribute("message", "Operation failed. " +
+                    "If this user is referenced elsewhere, resolve those links and try again.");
+            session.setAttribute("messageType", "error");
         }
 
         response.sendRedirect("manage-users");
     }
+
 }
