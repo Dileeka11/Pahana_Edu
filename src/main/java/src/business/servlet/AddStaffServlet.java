@@ -27,21 +27,32 @@ public class AddStaffServlet extends HttpServlet {
         String password = request.getParameter("password");
         String userType = "Staff";
 
-        // ✅ Hash the password before saving
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        try {
+            // Check if email already exists
+            if (staffService.doesEmailExist(email)) {
+                response.sendRedirect("addstaff.jsp?error=email_exists");
+                return;
+            }
 
-        Staffdto staffDto = new Staffdto();
-        staffDto.setUsername(username);
-        staffDto.setEmail(email);
-        staffDto.setPassword(hashedPassword);
-        staffDto.setUser_type(userType);
+            // Hash the password before saving
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        boolean success = staffService.registerStaff(staffDto);
+            Staffdto staffDto = new Staffdto();
+            staffDto.setUsername(username);
+            staffDto.setEmail(email);
+            staffDto.setPassword(hashedPassword);
+            staffDto.setUser_type(userType);
 
-        if (success) {
-            response.sendRedirect("addstaff.jsp?success=true");
-        } else {
-            response.sendRedirect("addstaff.jsp?error=true");
+            boolean success = staffService.registerStaff(staffDto);
+
+            if (success) {
+                response.sendRedirect("addstaff.jsp?success=true");
+            } else {
+                response.sendRedirect("addstaff.jsp?error=general_error");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("addstaff.jsp?error=general_error");
         }
     }
 }
