@@ -131,22 +131,36 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-2 px-0 sidebar">
-                <div class="text-center mb-4 px-3">
-                    <p class="logo-text">Pahana Edu</p>
-                    <p class="logo-subtext">Admin Panel</p>
+            <div class="col-md-2 sidebar">
+                <div class="text-center mb-4">
+                    <img src="${pageContext.request.contextPath}/assets/img/logo.png" alt="Bookshop Logo" class="mb-2" style="max-width: 120px; height: auto;">
+                    <h4>Pahana Edu</h4>
+                    <p class="text-muted">Admin Panel</p>
                 </div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/dashboard.jsp">
+                        <a class="nav-link active" href="${pageContext.request.contextPath}/admin/dashboard.jsp">
                             <i class="bi bi-speedometer2"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="${pageContext.request.contextPath}/admin/addstaff.jsp">
-                            <i class="bi bi-person-plus"></i> Register Staff
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/addstaff.jsp">
+                            <i class="bi bi-people"></i> Register Staff
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/ManageStaff">
+                            <i class="bi bi-people"></i> Manage Staff
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/bill-report.jsp">
+                            <i class="bi bi-receipt"></i> Bill Reports
+                        </a>
+                    </li>
+
                     <li class="nav-item mt-4">
                         <a class="nav-link text-danger" href="${pageContext.request.contextPath}/logout.jsp">
                             <i class="bi bi-box-arrow-right"></i> Logout
@@ -162,37 +176,8 @@
                         <h4><i class="bi bi-person-plus me-2"></i> Staff Registration</h4>
                     </div>
                     <div class="card-body">
-                        <c:if test="${not empty param.success}">
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="bi bi-check-circle-fill me-2"></i> Staff member added successfully!
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        </c:if>
-                        <c:if test="${not empty param.error}">
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i> Failed to add staff. Please try again.
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        </c:if>
-
+                        <!-- Alerts will be shown via SweetAlert2 -->
                         <form action="addstaff" method="post" class="needs-validation" novalidate>
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3">
-                                    <label for="firstName" class="form-label">First Name</label>
-                                    <input type="text" class="form-control" id="firstName" name="firstName" required>
-                                    <div class="invalid-feedback">
-                                        Please provide a first name.
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="lastName" class="form-label">Last Name</label>
-                                    <input type="text" class="form-control" id="lastName" name="lastName" required>
-                                    <div class="invalid-feedback">
-                                        Please provide a last name.
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="row mb-4">
                                 <div class="col-md-6 mb-3">
                                     <label for="username" class="form-label">Username</label>
@@ -253,8 +238,34 @@
         </div>
     </div>
 
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Check for URL parameters to show alerts
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.has('success')) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Staff member added successfully!',
+                    confirmButtonColor: '#4a90e2'
+                });
+            } else if (urlParams.has('error')) {
+                const errorMsg = urlParams.get('error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: errorMsg === 'email_exists' ? 'A staff member with this email already exists!' : 'An error occurred while adding staff member.',
+                    confirmButtonColor: '#4a90e2'
+                });
+            }
+        });
+    </script>
 
     <script>
         // Form validation

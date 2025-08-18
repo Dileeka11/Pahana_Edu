@@ -126,6 +126,18 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/ManageStaff">
+                        <i class="bi bi-people"></i> Manage Staff
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/bill-report.jsp">
+                        <i class="bi bi-receipt"></i> Bill Reports
+                    </a>
+                </li>
+
                 <li class="nav-item mt-4">
                     <a class="nav-link text-danger" href="${pageContext.request.contextPath}/logout.jsp">
                         <i class="bi bi-box-arrow-right"></i> Logout
