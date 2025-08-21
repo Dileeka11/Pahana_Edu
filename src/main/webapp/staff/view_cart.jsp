@@ -550,6 +550,7 @@
     </style>
 </head>
 <body>
+<%@ include file="/staff/includes/navbar.jsp" %>
 <div class="container">
     <div class="header fade-in">
         <h1>
@@ -761,32 +762,30 @@
     // Remove item function
     function removeItem(bookId, bookName) {
         if (confirm(`Are you sure you want to remove "${bookName}" from your cart?`)) {
+            // Create a form dynamically
             const form = document.createElement('form');
             form.method = 'post';
             form.action = 'view_cart.jsp';
 
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'removeFromCart';
-            input.value = bookId;
+            // Add removeFromCart parameter
+            const removeInput = document.createElement('input');
+            removeInput.type = 'hidden';
+            removeInput.name = 'removeFromCart';
+            removeInput.value = 'true';
 
+            // Add bookId parameter
             const bookIdInput = document.createElement('input');
             bookIdInput.type = 'hidden';
             bookIdInput.name = 'bookId';
             bookIdInput.value = bookId;
 
-            form.appendChild(input);
+            // Append inputs to form
+            form.appendChild(removeInput);
             form.appendChild(bookIdInput);
+
+            // Append form to body and submit
             document.body.appendChild(form);
-
-            // Add loading state
-            const row = document.querySelector(`tr[data-book-id="${bookId}"]`);
-            row.style.opacity = '0.5';
-            row.style.transform = 'scale(0.95)';
-
-            setTimeout(() => {
-                form.submit();
-            }, 300);
+            form.submit();
         }
     }
 
