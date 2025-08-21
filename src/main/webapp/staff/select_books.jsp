@@ -511,6 +511,7 @@
     </style>
 </head>
 <body>
+<%@ include file="/staff/includes/navbar.jsp" %>
 <div class="container">
     <div class="header fade-in">
         <h1><i class="fas fa-book-open"></i> BookStore</h1>
